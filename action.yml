@@ -1,0 +1,46 @@
+name: "Claude MCP Slack"
+description: "Provides Slack MCP server functionality for Claude Code Action, enabling Slack image downloads and integrations"
+branding:
+  icon: "message-circle"
+  color: "purple"
+
+inputs:
+  slack_token:
+    description: "Slack Bot User OAuth Token for API access"
+    required: true
+  download_directory:
+    description: "Directory where Slack images will be downloaded (relative to workspace)"
+    required: false
+    default: "."
+
+outputs:
+  mcp_config:
+    description: "MCP configuration JSON string for use with claude-code-action"
+    value: ${{ steps.setup.outputs.mcp_config }}
+  server_executable:
+    description: "Path to the Slack MCP server executable"
+    value: ${{ steps.setup.outputs.server_executable }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Bun
+      uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76 # v2.0.2
+      with:
+        bun-version: 1.2.11
+
+    - name: Install Dependencies
+      shell: bash
+      run: |
+        cd ${GITHUB_ACTION_PATH}
+        bun install
+
+    - name: Setup Slack MCP Server
+      id: setup
+      shell: bash
+      run: |
+        bun run ${GITHUB_ACTION_PATH}/src/setup.ts
+      env:
+        SLACK_TOKEN: ${{ inputs.slack_token }}
+        DOWNLOAD_DIRECTORY: ${{ inputs.download_directory }}
+        GITHUB_ACTION_PATH: ${{ github.action_path }}

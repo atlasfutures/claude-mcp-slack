@@ -1,0 +1,49 @@
+{
+  "name": "@atlasfutures/claude-mcp-slack",
+  "version": "1.0.0",
+  "description": "Standalone Slack MCP server for Claude Code Action",
+  "private": true,
+  "main": "src/setup.ts",
+  "scripts": {
+    "build": "bun build src/setup.ts --outdir=dist --target=node",
+    "test": "bun test",
+    "test:unit": "bun test test/unit",
+    "test:integration": "bun test test/integration",
+    "test:security": "bun test test/security",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint src test",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@actions/core": "^1.10.1",
+    "@modelcontextprotocol/sdk": "^1.11.0",
+    "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "@types/bun": "1.2.11",
+    "@types/node": "^20.0.0",
+    "prettier": "3.5.3",
+    "typescript": "^5.8.3",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atlasfutures/claude-mcp-slack.git"
+  },
+  "keywords": [
+    "github-action",
+    "slack",
+    "mcp",
+    "claude",
+    "ai",
+    "automation"
+  ],
+  "author": "Atlas Futures",
+  "license": "MIT"
+}
