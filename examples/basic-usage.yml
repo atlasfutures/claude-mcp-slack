@@ -1,0 +1,31 @@
+name: Basic Claude MCP Slack Usage
+
+on:
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created]
+
+jobs:
+  claude-with-slack:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    
+    steps:
+      - name: Setup Slack MCP
+        uses: atlasfutures/claude-mcp-slack@v1
+        with:
+          slack_token: ${{ secrets.SLACK_TOKEN }}
+        id: slack-mcp
+
+      - name: Claude Code Action
+        uses: anthropics/claude-code-action@main
+        with:
+          mcp_config: ${{ steps.slack-mcp.outputs.mcp_config }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          custom_instructions: |
+            You can now download and analyze Slack images using the slack_image_download tool.
+            When users share Slack file URLs, you can download them for analysis.

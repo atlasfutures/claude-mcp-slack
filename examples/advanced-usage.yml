@@ -1,0 +1,58 @@
+name: Advanced Claude MCP Slack Usage
+
+on:
+  issues:
+    types: [opened, edited]
+  issue_comment:
+    types: [created, edited]
+  pull_request:
+    types: [opened, edited]
+  pull_request_review_comment:
+    types: [created]
+
+jobs:
+  claude-with-multiple-mcp:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Slack MCP
+        uses: atlasfutures/claude-mcp-slack@v1
+        with:
+          slack_token: ${{ secrets.SLACK_TOKEN }}
+          download_directory: "./slack-downloads"
+        id: slack-mcp
+
+      - name: Claude Code Action with Enhanced Config
+        uses: anthropics/claude-code-action@main
+        with:
+          trigger_phrase: "@claude"
+          model: "claude-3-5-sonnet-20241022"
+          mcp_config: ${{ steps.slack-mcp.outputs.mcp_config }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          custom_instructions: |
+            You have access to Slack integration through the following tools:
+            
+            1. slack_image_download: Download and analyze images from Slack
+            2. slack_health_check: Check the status of Slack integration
+            
+            When users share Slack URLs like https://files.slack.com/..., you can:
+            - Download the files for analysis
+            - Provide insights about images, documents, or other content
+            - Help with debugging by analyzing screenshots
+            
+            Always use descriptive filenames when downloading Slack content.
+          allowed_tools: |
+            mcp__slack__slack_image_download
+            mcp__slack__slack_health_check
+          timeout_minutes: 30
+          max_turns: 10
+        env:
+          # Optional: Pass additional environment variables
+          DOWNLOAD_DIRECTORY: "./slack-downloads"
